@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,HttpResponse
 from .models import user_admin
 from django.contrib import messages
 import bcrypt
-from .forms import *
+# from .forms import *
 from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -34,9 +34,12 @@ def login(request):
         for tag, error in errors.items():
             messages.error(request, error, extra_tags=tag)
         return redirect('/')
-    else:
+    elif  user.user_type == 'admin':
         request.session ['id']=user.id
         return redirect ('/user_page', id=user.id)
+    else:
+        request.session ['id']=user.id
+        return redirect (f'{user.id}/user_dashboard') 
 
 def register(request):
     return render(request, 'application/register.html')
@@ -52,8 +55,10 @@ def add_user(request):
             username=request.POST["username"]
             email =request.POST["email"]
             password=request.POST["password"]
-    added_user = user_admin.objects.create( username = username , email = email, password = password )
-    return redirect('/user_page')
+            userType = request.POST['userType']
+    added_user = user_admin.objects.create( username = username , email = email, password = password , user_type = userType )
+    request.session ['id']=added_user.id
+    return redirect(f'{added_user.id}/user_dashboard')
 
 def user_page(request):
     return render(request, 'application/index.html')
@@ -113,4 +118,61 @@ def ocr_space_url(url, id , overlay=False, api_key='helloworld', language='eng')
 # send the result to template to display it? or show it directly in the table?
 
     return HttpResponse(vv)
+
+
+############## Move to USER DASHBOARD ##############
+
+def user_dashboard(request,id):
+    context = {
+        'user_data': user_admin.objects.get(id = id) 
+    }
+    return render(request, "application/user_dashboard.html", context)
+
+############## Edit User Profile  ##############
+
+
+
+def edit_user(request,id):
+
+    context = { "user_data": user_admin.objects.get(id=id)}
+    return render(request, "application/user_profile.html", context)
+
+
+def update_user(request):
+    if request.method == "POST":
+            errors = user_admin.objects.user_validator(request.POST)
+            if len(errors) > 0:
+                for key, value in errors.items():
+                    messages.error(request, value)
+            return redirect(f'/{request.POST["userID"]}/edit')
+            userID =  request.POST["userID"]
+            userName = request.POST['username']
+            email = request.POST['email']
+
+            current_user = user_admin.objects.get(id = userID)
+
+            current_user.username = userName
+            current_user.email = email
+            current_user.save()
+    return redirect(f'/{ request.POST["userID"]}/edit')
+
+
+
+
+def update_password(request):
+    if request.method == "POST":
+            errors = user_admin.objects.password_validator(request.POST)
+            if len(errors) > 0:
+                for key, value in errors.items():
+                    messages.error(request, value)
+            return redirect(f'{request.POST["userID"]}/edit')
+            userID =  request.POST["userID"]
+            new_password = request.POST['new_password']
+
+            current_user = user_admin.objects.get(id = userID)
+            current_user.password = new_password
+            current_user.save()
+    return redirect(f'{ request.POST["userID"]}/edit')
+
+
 

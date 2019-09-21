@@ -33,11 +33,50 @@ class validator(models.Manager):
 
 
         return errors
+    def user_validator(self, postData):
+        errors = {}
+        # The email should have a valid format
+
+        if len(postData['email']) < 1:
+            errors['email'] = "email field cannot be blank"
+        elif not emailRegex.match(postData['email']):
+            errors['email'] = "The email should be in valid format"
+
+
+        if len(postData['username']) < 1:
+            errors['username'] = "Username field cannot be blank"
+        elif postData['username'].isalpha() ==  False:
+            errors["username"] = "Name fields should be alphabetic"
+
+        #Validate registration 
+        temp = postData['username']
+        username_exists = user_admin.objects.filter(username=temp)
+        if len(username_exists) != 0:
+            errors['username'] = " user name is already registered"
+
+        return errors
+
+    def password_validator(self, postData):
+        errors = {}
+        temp = postData['password']
+        password_exists = user_admin.objects.filter(password=temp)
+        if len(password_exists) == 0:
+            errors['password'] = "incorrect password"
+            return errors
+
+        # Password should be a minimum of 8 chars with at least one special char and 1 number
+        if len(postData['new_password']) < 8:
+            errors['new_password'] = "Password should be a minimum of 8 characters"
+        elif not passwordRegex.match(postData['password']):
+            errors['new_password'] = "Invalid Password, must have at least one Capital letter, at least one lower case letter and at least one number or special character"
+
+        return errors
         
 class user_admin(models.Model):
     username = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
+    user_type = models.CharField(max_length=45)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = validator()
