@@ -7,5 +7,6 @@ urlpatterns = [
         url(r'^register$', views.register),
         url(r'^add_user$', views.add_user),
         url(r'^user_page$', views.user_page, name= 'dash'),
-        url(r'^users$', views.users, name ='users')
+        url(r'^users$', views.users, name ='users'),
+        url(r'^upload_file$', views.upload_file, name ='upload')
 	]
