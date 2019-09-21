@@ -77,12 +77,11 @@ WSGI_APPLICATION = 'black_belt.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': ('black_belt'),
+        'NAME': ('img_test'),
         'USER': 'postgres',
-        'PASSWORD': '1997',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
-        'PORT': '5432', 
-    }
+        'PORT': '5432', }
 }
 
 
