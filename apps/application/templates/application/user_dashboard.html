@@ -84,6 +84,7 @@
                 <div id="div1">
                       <form method="post" action="/upload_file" enctype="multipart/form-data">
                         {% csrf_token %}
+                        <input type="hidden" name="userID" value="{{user_data.id}}" />
                         <input type="file" name="myfile">
                         <button type="submit">Upload</button>
                       </form>
@@ -102,26 +103,30 @@
                         <tr>
                           </th>
                           <th>URL</th>
+                          <th>Status</th>
                           <th>Result</th>
                           <th>created At</th>
                           <th class="text-center">Action</th>
                         </tr>
                       </thead>
                       <tbody>
+                        {% for file in user_files %}
                         <tr>
                           <td>
-                            <div>{{user_data.username}}</div>
+                            <div>{{file.submitted_URL}}</div>
                             <div class="small text-muted">
                               <span>Verified</span></div>
                           </td>
-                          <td>{{user_data.email}}</td>
-                          <td>{{user_data.created_at}}</td>
+                          <td>{{file.respone}}</td>
+                          <td>{{file.result}}</td>
+                          <td>{{file.created_at}}</td>
                           <td class="text-center">
                             <a href="/"> Show </a> |
                             <a href="/"> Edit </a> |
                             <a href="/"> Delete </a>
                           </td>
                         </tr>
+                        {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -134,6 +139,7 @@
         <div class="container-fluid">
         <div class="form">
           <form action="" method="post" role="form" class="contactForm">
+            {% csrf_token %}
             <div class="form-row">
               <div class="form-group col-md-6">
                 <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />

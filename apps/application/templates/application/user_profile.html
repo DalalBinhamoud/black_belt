@@ -87,11 +87,11 @@
                 {% csrf_token %}
             <input type="hidden" name="userID" value="{{user_data.id}}" />
             <div class="form-group">
-                <input type="text" class="form-control" name="username" id="subject" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
+                <input type="text" class="form-control" name="username" value="{{user_data.username}}" id="subject" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
                 <div class="validation"></div>
               </div>
             <div class="form-group">
-              <input type="email" class="form-control" name="email" id="subject" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
+              <input type="email" class="form-control" name="email" value="{{user_data.email}}" id="subject" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
               <div class="validation"></div>
             </div>
             <div class="text-center"><button type="submit">Update</button></div>
