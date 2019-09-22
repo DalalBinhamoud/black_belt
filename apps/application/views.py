@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect,HttpResponse
 from .models import user_admin
+from .models import files
 from django.contrib import messages
 import bcrypt
 # from .forms import *
@@ -7,6 +8,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 import request
+import requests
 import json
 
 def index(request):
@@ -70,7 +72,7 @@ def users(request):
     }
     return render(request, "application/users.html", context)
 
-def files(request):
+def allfiles(request):
     context = {
         'all_files': files.objects.all()
     }
@@ -85,46 +87,84 @@ def files(request):
 def upload_file(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
+        myID = request.POST['userID']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        id=request.session ['id']
-        ocr_space_url (uploaded_file_url , id)
+        # uploaded_file_url = fs.url(filename)
+        #ocr_space_url (uploaded_file_url , id)
+        id=myID #request.session ['id']
+        test_file = ocr_space_file(filename=filename, language='eng')
+        file = open('parssing.txt', 'a')
+        file.write(test_file)
+        obj = json.loads(test_file)
+        context = {
+                    'user_data': user_admin.objects.get(id = id)
+                           }
+        print(obj)
+        status = ''
+        myres = ''
+        for keyF in list(obj.values())[0]:
+            for key, result in keyF.items():
+                if key == 'ParsedText':
+                    myres = result
+        
+                if key == 'ErrorMessage': 
+                    if result == '':
+                        status = 'success'
+                        added_file = files.objects.create( submitted_URL = filename , result = myres, respone = status , user_id = id )
+                        context2 = {
+                            'user_data': user_admin.objects.get(id = id),
+                            'user_files': files.objects.all()
+                                }
+                        return render(request, "application/user_dashboard.html", context2)
+                    else:
+                        status = 'failure'
+                        added_file = files.objects.create( submitted_URL = filename , result = myres, respone = status , user_id = id )
+                        context2 = {
+                            'user_data': user_admin.objects.get(id = id),
+                            'user_files': files.objects.all()
+                                }
+                        return render(request, "application/user_dashboard.html", context2)
+        return render(request, "application/user_dashboard.html", context)
 
-
-def ocr_space_url(url, id , overlay=False, api_key='helloworld', language='eng'):
-    payload = {'url': url,
-               'isOverlayRequired': overlay,
+def ocr_space_file(filename, overlay=False, api_key='307a63ae1788957', language='eng', OCREngine = 2):
+    payload = {'isOverlayRequired': overlay,
                'apikey': api_key,
                'language': language,
+               'OCREngine' : OCREngine,
                }
-    r = requests.post('https://api.ocr.space/parse/image',
-                      data=payload,
-                      )
-    test_file=r.content.decode()
-    file = open('parssing2.txt', 'a')
-    file.write(test_file)
-    json_string = test_file
-    obj = json.loads(json_string)
-## not yet finish
-    for keyF in list(obj.values())[0]:
-        for kk, vv in keyF.items():
-            if kk == 'ParsedText':
-                print("YOU DID IT")
-                print(vv)
-                # dic= {'txt' = vv }
+    with open(filename, 'rb') as f:
+        r = requests.post('https://api.ocr.space/parse/image',
+                          files={filename: f},
+                          data=payload,
+                          )
+    return r.content.decode()
+        
+
+
+# def ocr_space_url(url, id , overlay=False, api_key='helloworld', language='eng', filetype= 'PNG'):
+#     payload = {'url': url,
+#                'isOverlayRequired': overlay,
+#                'apikey': api_key,
+#                'language': language,
+#                'filetype': filetype
+#                }
+#     r = requests.post('https://api.ocr.space/parse/image',
+#                       data=payload,
+#                       )
+#     return r.content.decode()
 
 # create file record in db
 # send the result to template to display it? or show it directly in the table?
 
-    return HttpResponse(vv)
 
 
 ############## Move to USER DASHBOARD ##############
 
 def user_dashboard(request,id):
     context = {
-        'user_data': user_admin.objects.get(id = id) 
+        'user_data': user_admin.objects.get(id = id), 
+        'user_files': files.objects.all()
     }
     return render(request, "application/user_dashboard.html", context)
 
