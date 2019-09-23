@@ -1,13 +1,12 @@
 from django.shortcuts import render, redirect,HttpResponse
-from .models import user_admin
-from .models import files
+from .models import *
 from django.contrib import messages
 import bcrypt
 # from .forms import *
 from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-import request
+# import request
 import requests
 import json
 
@@ -63,15 +62,22 @@ def add_user(request):
     return redirect(f'{added_user.id}/user_dashboard')
 
 def user_page(request):
-    return render(request, 'application/index.html')
+    mess_dic= {
+        'all_messages': feedback.objects.all(),
+        'all_files': files.objects.all()
+    }
+
+    return render(request, 'application/index.html' , mess_dic )
 
  
 def users(request):
     context = {
-        'all_users': user_admin.objects.all()
+        'all_users': user_admin.objects.all() #this will return users and admin??
     }
     return render(request, "application/users.html", context)
 
+
+#where did u use this function?
 def allfiles(request):
     context = {
         'all_files': files.objects.all()
@@ -214,5 +220,14 @@ def update_password(request):
             current_user.save()
     return redirect(f'{ request.POST["userID"]}/edit')
 
+
+def feedback_form(request,):
+    if request.method == 'POST':
+        user_name=request.POST['name']
+        email = request.POST['email']
+        message = request.POST['message']
+        feedback.objects.create(user_name=user_name,email=email,message=message)
+        return HttpResponse ('THANKS') # I will change it
+    return render(request, 'application/user_dashboard.html')
 
 

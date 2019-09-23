@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': ('black_belt'),
         'USER': 'postgres',
-        'PASSWORD': '1111',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '5432', }
 }

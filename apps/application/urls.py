@@ -12,6 +12,7 @@ urlpatterns = [
         url(r'^(?P<id>\d+)/user_dashboard$', views.user_dashboard, name= 'userDash'),
         url(r'^(?P<id>\d+)/edit$', views.edit_user, name ='editProfile'),
         url(r'^update_user$', views.update_user),
-        url(r'^update_password$', views.update_password)
+        url(r'^update_password$', views.update_password),
+        url(r'^feedback', views.feedback_form)
 
 	]
