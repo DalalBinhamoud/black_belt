@@ -89,9 +89,9 @@ class files(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-# class messages(models.Model):
-#     message = models.TextField()
-#     reciver_id = 
-#     sender_id = 
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+class feedback(models.Model):
+    user_name = models.CharField(max_length=120)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
