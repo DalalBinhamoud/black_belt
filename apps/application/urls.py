@@ -13,6 +13,8 @@ urlpatterns = [
         url(r'^(?P<id>\d+)/edit$', views.edit_user, name ='editProfile'),
         url(r'^update_user$', views.update_user),
         url(r'^update_password$', views.update_password),
-        url(r'^feedback', views.feedback_form)
+        url(r'^feedback$', views.feedback_form),
+        url(r'^(?P<id>\d+)/delete$', views.delete_files, name="delete"),
+        # url(r'^(?P<id>\d+)/show$', views.show_result, name="show"),
 
 	]
