@@ -64,7 +64,8 @@ def add_user(request):
 def user_page(request):
     mess_dic= {
         'all_messages': feedback.objects.all(),
-        'all_files': files.objects.all()
+        'all_files': files.objects.all(),
+        'count': feedback.filter(read=False).count()
     }
 
     return render(request, 'application/index.html' , mess_dic )
@@ -226,8 +227,26 @@ def feedback_form(request,):
         user_name=request.POST['name']
         email = request.POST['email']
         message = request.POST['message']
-        feedback.objects.create(user_name=user_name,email=email,message=message)
+        read=False
+        feedback.objects.create(user_name=user_name,email=email,message=message , read=False)
         return HttpResponse ('THANKS') # I will change it
     return render(request, 'application/user_dashboard.html')
 
 
+def delete_files(request,id):
+    file_to_delete = files.objects.get(id=id)
+    file_to_delete.delete()
+    id =  str( request.session ['id'] )
+    return redirect('/' +id +'/user_dashboard')
+
+
+# def num_of_messages:
+#     pass
+
+
+# def show_result (request,id):
+#     file_dic = {
+#         'result':files.objects.get(id=id)
+#     }
+#
+#     return render ('application/show.html' , file_dic)

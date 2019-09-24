@@ -121,9 +121,8 @@
                           <td>{{file.result}}</td>
                           <td>{{file.created_at}}</td>
                           <td class="text-center">
-                            <a href="/"> Show </a> |
-                            <a href="/"> Edit </a> |
-                            <a href="/"> Delete </a>
+                            <a href="{% url 'show' id=file.id %}"> Show </a> |
+                            <a href="{% url 'delete' id=file.id %}"> Delete </a>
                           </td>
                         </tr>
                         {% endfor %}

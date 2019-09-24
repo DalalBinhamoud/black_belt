@@ -93,5 +93,6 @@ class feedback(models.Model):
     user_name = models.CharField(max_length=120)
     email = models.EmailField()
     message = models.TextField()
+    read=models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
